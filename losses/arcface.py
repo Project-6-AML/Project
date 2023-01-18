@@ -27,6 +27,8 @@ class ArcFace(nn.Module):
             d_theta = torch.cos(theta_m) - cos_theta
 
         logits = self.s * (cos_theta + d_theta)
+        return logits
+
         loss = F.cross_entropy(logits, y)
 
         return loss
