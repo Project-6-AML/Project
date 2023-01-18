@@ -5,6 +5,8 @@ import logging
 from typing import Type, List
 from argparse import Namespace
 from cosface_loss import MarginCosineProduct
+from losses.arcface import ArcFace
+from losses.sphereface import SphereFace
 
 
 def move_to_device(optimizer: Type[torch.optim.Optimizer], device: str):
@@ -24,7 +26,7 @@ def save_checkpoint(state: dict, is_best: bool, output_folder: str,
 
 
 def resume_train(args: Namespace, output_folder: str, model: torch.nn.Module,
-                 model_optimizer: Type[torch.optim.Optimizer], classifiers: List[MarginCosineProduct],
+                 model_optimizer: Type[torch.optim.Optimizer], classifiers: List[ArcFace],
                  classifiers_optimizers: List[Type[torch.optim.Optimizer]]):
     """Load model, optimizer, and other training parameters"""
     logging.info(f"Loading checkpoint: {args.resume_train}")
