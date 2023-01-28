@@ -36,7 +36,7 @@ class GeoLocalizationNet(nn.Module):
             nn.Linear(features_dim, fc_output_dim),
             L2Norm()
         )
-        self.attn1 = Self_Attn( 128, 'relu')
+        self.attn1 = Self_Attn( 512, 'relu')
         self.attn2 = Self_Attn( 64,  'relu')
     
     def forward(self, x):
