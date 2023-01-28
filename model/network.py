@@ -6,6 +6,7 @@ from torch import nn
 from typing import Tuple
 
 from model.layers import Flatten, L2Norm, GeM
+from self_attention_GAN import Self_Attn
 
 # The number of channels in the last convolutional layer, the one before average pooling
 CHANNELS_NUM_IN_LAST_CONV = {
@@ -35,9 +36,12 @@ class GeoLocalizationNet(nn.Module):
             nn.Linear(features_dim, fc_output_dim),
             L2Norm()
         )
+        self.attn1 = Self_Attn( 128, 'relu')
+        self.attn2 = Self_Attn( 64,  'relu')
     
     def forward(self, x):
         x = self.backbone(x)
+        x, _ = self.attn1(x)
         x = self.aggregation(x)
         return x
 
