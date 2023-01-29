@@ -29,6 +29,7 @@ def processing(im):
 
 
 if __name__ == "__main__":
+    # Path is fixed, this will not work on other machines
     path_in  = "D:\Prova\CosPlace/ImmaginiProvaDA"
     path_dataset = "D:\Prova\small/train"
     out = "D:\Prova\CosPlace\out"
