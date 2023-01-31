@@ -41,14 +41,14 @@ class GeoLocalizationNet(nn.Module):
         self.attn1 = Self_Attn( 512, 'relu')
         self.attn2 = Self_Attn( 64,  'relu')
         
-        nhead = 4
-        dropout = 0.1
-        activation = 'relu'
-        normalize_before = False
-        dim_feedforward = features_dim / 4 #dim of the blocks of the inner dropout
-        encoder_layer = TransformerEncoderLayer(features_dim, nhead, dim_feedforward, dropout, activation, normalize_before)
-        encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
-        self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
+        # nhead = 4
+        # dropout = 0.1
+        # activation = 'relu'
+        # normalize_before = False
+        # dim_feedforward = features_dim / 4 #dim of the blocks of the inner dropout
+        # encoder_layer = TransformerEncoderLayer(features_dim, nhead, dim_feedforward, dropout, activation, normalize_before)
+        # encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
+        # self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
         
     def forward(self, x):
         x = self.backbone(x)
