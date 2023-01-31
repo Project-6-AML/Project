@@ -41,7 +41,7 @@ class GeoLocalizationNet(nn.Module):
         self.attn1 = Self_Attn( 512, 'relu')
         self.attn2 = Self_Attn( 64,  'relu')
         
-        nhead = 3
+        nhead = 4
         dropout = 0.1
         activation = 'relu'
         normalize_before = False
