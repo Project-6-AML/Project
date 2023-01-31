@@ -110,18 +110,16 @@ class TrainDataset(torch.utils.data.Dataset):
         #images_paths = sorted(glob(f"{dataset_folder}/**/*.*", recursive=True))
 
         night_images_paths = sorted(glob(f"{dataset_folder}/**/*.*", recursive=True))
-        print(len(night_images_paths))
-        
         images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
-        print(len(images_paths))
-        day_images_paths = images_paths#[image for image in images_paths if not dataset_night in image]
-        #night_images_paths = [image for image in images_paths if dataset_night in image]
+        day_images_paths = [image for image in night_images_paths if not dataset_night in image]
+        night_images_paths = [image for image in night_images_paths if dataset_night in image]
         
         logging.debug(f"Found {len(day_images_paths)} day images")
         logging.debug(f"Found {len(night_images_paths)} nigth images")
+        logging.debug(f"Found {len(images_paths)} jpg images")
         
         images_paths = day_images_paths
-        images_paths.extend(random.sample(night_images_paths, data_aug_perc*len(day_images_paths)))
+        images_paths.extend(random.sample(night_images_paths, int(data_aug_perc*len(day_images_paths))))
         logging.debug(f"Found {len(images_paths)} tot images")
         
         logging.debug("For each image, get its UTM east, UTM north and heading from its path")
