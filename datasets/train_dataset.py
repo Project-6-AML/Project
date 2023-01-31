@@ -109,7 +109,7 @@ class TrainDataset(torch.utils.data.Dataset):
         
         #images_paths = sorted(glob(f"{dataset_folder}/**/*.*", recursive=True))
 
-        night_images_paths = sorted(glob(f"{dataset_folder}/{dataset_night}/*.*", recursive=True))
+        night_images_paths = sorted(glob(f"{dataset_folder}/**/*.*", recursive=True))
         print(len(night_images_paths))
         
         images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
