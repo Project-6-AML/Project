@@ -52,6 +52,8 @@ def parse_arguments(is_training: bool = True):
     # Paths parameters
     parser.add_argument("--dataset_folder", type=str, default=None,
                         help="path of the folder with train/val/test sets")
+    parser.add_argument("--data_aug_perc", type=float, default=0,
+                        help="data augmentation percentage")
     parser.add_argument("--save_dir", type=str, default="default",
                         help="name of directory on which to save the logs, under logs/save_dir")
     
