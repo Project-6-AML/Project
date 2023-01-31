@@ -111,6 +111,7 @@ class TrainDataset(torch.utils.data.Dataset):
 
         night_images_paths = sorted(glob(f"{dataset_folder}/**/*.*", recursive=True))
         images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
+        print(night_images_paths[-1])
         day_images_paths = [image for image in night_images_paths if not dataset_night in image]
         night_images_paths = [image for image in night_images_paths if dataset_night in image]
         
