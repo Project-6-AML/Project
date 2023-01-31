@@ -107,11 +107,12 @@ class TrainDataset(torch.utils.data.Dataset):
         if not os.path.exists(dataset_folder):
             raise FileNotFoundError(f"Folder {dataset_folder} does not exist")
         
-        images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True).extend(glob(f"{dataset_folder}/**/*.png", recursive=True)))
+        images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
+        images_png = sorted(glob(f"{dataset_folder}/**/*.png", recursive=True))
         print(len(images_paths))
-        print(images_paths[0])
+        print(f"png {len(images_png)}")
         day_images_paths = [image for image in images_paths if not dataset_night in image]
-        night_images_paths = [image for image in images_paths if dataset_night in image]
+        night_images_paths = [image for image in images_png if dataset_night in image]
         
         logging.debug(f"Found {len(day_images_paths)} day images")
         logging.debug(f"Found {len(night_images_paths)} nigth images")

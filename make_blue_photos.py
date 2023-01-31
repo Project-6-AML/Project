@@ -25,7 +25,7 @@ def processing(im):
     new_img = Image.fromarray(arr)
     #new_img = transforms.ToPILImage()(new_img)
     name = im.split("\\")[-1][:-4]
-    new_img.save(f"{out}/{name}DA.png")
+    new_img.save(f"{out}/{name}DA.jpg")
 
 
 if __name__ == "__main__":
