@@ -49,7 +49,7 @@ model_optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 
 #### Datasets
 groups = [TrainDataset(args, args.train_set_folder, M=args.M, alpha=args.alpha, N=args.N, L=args.L,
-                       current_group=n, min_images_per_class=args.min_images_per_class) for n in range(args.groups_num)]
+                       current_group=n, min_images_per_class=args.min_images_per_class, dataset_night='night_generated', data_aug_perc=0.1) for n in range(args.groups_num)]
 # Each group has its own classifier, which depends on the number of classes in the group
 classifiers = [cosface_loss.MarginCosineProduct(args.fc_output_dim, len(group)) for group in groups]
 #classifiers = [arcface.ArcFace(args.fc_output_dim, len(group)) for group in groups]

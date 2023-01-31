@@ -19,7 +19,7 @@ def open_image(path):
 
 class TrainDataset(torch.utils.data.Dataset):
     def __init__(self, args, dataset_folder, M=10, alpha=30, N=5, L=2,
-                 current_group=0, min_images_per_class=10):
+                 current_group=0, min_images_per_class=10, dataset_night=None, data_aug_perc=0):
         """
         Parameters (please check our paper for a clearer explanation of the parameters).
         ----------
@@ -47,7 +47,7 @@ class TrainDataset(torch.utils.data.Dataset):
         if not os.path.exists(filename):
             os.makedirs("cache", exist_ok=True)
             logging.info(f"Cached dataset {filename} does not exist, I'll create it now.")
-            self.initialize(dataset_folder, M, N, alpha, L, min_images_per_class, filename)
+            self.initialize(dataset_folder, M, N, alpha, L, min_images_per_class, filename, dataset_night, data_aug_perc)
         elif current_group == 0:
             logging.info(f"Using cached dataset {filename}")
         
@@ -101,14 +101,22 @@ class TrainDataset(torch.utils.data.Dataset):
         return len(self.classes_ids)
     
     @staticmethod
-    def initialize(dataset_folder, M, N, alpha, L, min_images_per_class, filename):
+    def initialize(dataset_folder, M, N, alpha, L, min_images_per_class, filename, dataset_night: str, data_aug_perc: float):
         logging.debug(f"Searching training images in {dataset_folder}")
         
         if not os.path.exists(dataset_folder):
             raise FileNotFoundError(f"Folder {dataset_folder} does not exist")
         
         images_paths = sorted(glob(f"{dataset_folder}/**/*.jpg", recursive=True))
-        logging.debug(f"Found {len(images_paths)} images")
+        day_images_paths = [image for image in images_paths if not dataset_night in image]
+        night_images_paths = [image for image in images_paths if dataset_night in image]
+        
+        logging.debug(f"Found {len(day_images_paths)} day images")
+        logging.debug(f"Found {len(night_images_paths)} nigth images")
+        
+        images_paths = day_images_paths
+        images_paths.extend(random.sample(night_images_paths, data_aug_perc*len(day_images_paths)))
+        logging.debug(f"Found {len(images_paths)} tot images")
         
         logging.debug("For each image, get its UTM east, UTM north and heading from its path")
         images_metadatas = [p.split("@") for p in images_paths]

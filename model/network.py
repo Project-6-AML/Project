@@ -7,6 +7,7 @@ from typing import Tuple
 
 from model.layers import Flatten, L2Norm, GeM
 from self_attention_GAN import Self_Attn
+from transformer import TransformerEncoderLayer, TransformerEncoder
 
 # The number of channels in the last convolutional layer, the one before average pooling
 CHANNELS_NUM_IN_LAST_CONV = {
@@ -29,6 +30,7 @@ class GeoLocalizationNet(nn.Module):
         super().__init__()
         assert backbone in CHANNELS_NUM_IN_LAST_CONV, f"backbone must be one of {list(CHANNELS_NUM_IN_LAST_CONV.keys())}"
         self.backbone, features_dim = get_backbone(backbone)
+
         self.aggregation = nn.Sequential(
             L2Norm(),
             GeM(),
@@ -38,10 +40,21 @@ class GeoLocalizationNet(nn.Module):
         )
         self.attn1 = Self_Attn( 512, 'relu')
         self.attn2 = Self_Attn( 64,  'relu')
-    
+        
+        nhead = 3
+        dropout = 0.1
+        activation = 'relu'
+        normalize_before = None #False
+        seq_len = d_K = None #Needed for the LinearMultiheadAttention
+        dim_feedforward = features_dim / 4 #dim of the blocks of the inner dropout
+        encoder_layer = TransformerEncoderLayer(features_dim, seq_len, d_K, nhead, dim_feedforward, dropout, activation, normalize_before)
+        encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
+        self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
+        
     def forward(self, x):
         x = self.backbone(x)
-        x, _ = self.attn1(x)
+        #x, _ = self.attn1(x)
+        #x = self.rerank(x)
         x = self.aggregation(x)
         return x
 
