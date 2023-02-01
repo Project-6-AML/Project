@@ -28,7 +28,13 @@ def parse_arguments(is_training: bool = True):
     parser.add_argument("--iterations_per_epoch", type=int, default=10000, help="_")
     parser.add_argument("--lr", type=float, default=0.00001, help="_")
     parser.add_argument("--classifiers_lr", type=float, default=0.01, help="_")
+    parser.add_argument("--self_attention", action="store_true",
+                        help="use Self Attention")
+    parser.add_argument("--reranking", action="store_true",
+                        help="use Reranking")
     # Data augmentation
+    parser.add_argument("--data_aug_perc", type=float, default=0,
+                        help="data augmentation percentage")
     parser.add_argument("--brightness", type=float, default=0.7, help="_")
     parser.add_argument("--contrast", type=float, default=0.7, help="_")
     parser.add_argument("--hue", type=float, default=0.5, help="_")
@@ -52,8 +58,6 @@ def parse_arguments(is_training: bool = True):
     # Paths parameters
     parser.add_argument("--dataset_folder", type=str, default=None,
                         help="path of the folder with train/val/test sets")
-    parser.add_argument("--data_aug_perc", type=float, default=0,
-                        help="data augmentation percentage")
     parser.add_argument("--save_dir", type=str, default="default",
                         help="name of directory on which to save the logs, under logs/save_dir")
     

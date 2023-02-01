@@ -20,7 +20,7 @@ CHANNELS_NUM_IN_LAST_CONV = {
 
 
 class GeoLocalizationNet(nn.Module):
-    def __init__(self, backbone : str, fc_output_dim : int):
+    def __init__(self, backbone : str, fc_output_dim : int, self_attn = False, rerank = False):
         """Return a model for GeoLocalization.
         
         Args:
@@ -38,22 +38,28 @@ class GeoLocalizationNet(nn.Module):
             nn.Linear(features_dim, fc_output_dim),
             L2Norm()
         )
-        self.attn1 = Self_Attn( 512, 'relu')
-        self.attn2 = Self_Attn( 64,  'relu')
         
-        # nhead = 4
-        # dropout = 0.1
-        # activation = 'relu'
-        # normalize_before = False
-        # dim_feedforward = features_dim / 4 #dim of the blocks of the inner dropout
-        # encoder_layer = TransformerEncoderLayer(features_dim, nhead, dim_feedforward, dropout, activation, normalize_before)
-        # encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
-        # self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
+        self.attn = None
+        if self_attn:
+            self.attn = Self_Attn( 512, 'relu')
+        
+        self.rerank = None
+        if rerank:
+            nhead = 4
+            dropout = 0.1
+            activation = 'relu'
+            normalize_before = False
+            dim_feedforward = features_dim / 4 #dim of the blocks of the inner dropout
+            encoder_layer = TransformerEncoderLayer(features_dim, nhead, dim_feedforward, dropout, activation, normalize_before)
+            encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
+            self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
         
     def forward(self, x):
         x = self.backbone(x)
-        #x, _ = self.attn1(x)
-        #x = self.rerank(x)
+        if self.attn:
+            x, _ = self.attn(x)
+        if self.rerank:
+            x = self.rerank(x)
         x = self.aggregation(x)
         return x
 
