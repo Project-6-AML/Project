@@ -57,10 +57,8 @@ class GeoLocalizationNet(nn.Module):
     def forward(self, x):
         x = self.backbone(x)
         if self.attn:
-            print('self_attn')
             x, _ = self.attn(x)
         if self.rerank:
-            print('rerank')
             x = self.rerank(x)
         x = self.aggregation(x)
         return x
