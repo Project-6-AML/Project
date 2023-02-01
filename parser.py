@@ -35,6 +35,8 @@ def parse_arguments(is_training: bool = True):
     # Data augmentation
     parser.add_argument("--data_aug_perc", type=float, default=0,
                         help="data augmentation percentage")
+    parser.add_argument("--data_aug_tag", type=str, default="night",
+                        help="data augmentation percentage")
     parser.add_argument("--brightness", type=float, default=0.7, help="_")
     parser.add_argument("--contrast", type=float, default=0.7, help="_")
     parser.add_argument("--hue", type=float, default=0.5, help="_")
