@@ -30,6 +30,7 @@ class GeoLocalizationNet(nn.Module):
         super().__init__()
         assert backbone in CHANNELS_NUM_IN_LAST_CONV, f"backbone must be one of {list(CHANNELS_NUM_IN_LAST_CONV.keys())}"
         self.backbone, features_dim = get_backbone(backbone)
+        print(self.backbone)
 
         self.aggregation = nn.Sequential(
             L2Norm(),
