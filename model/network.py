@@ -99,7 +99,7 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
                 p.requires_grad = False
         logging.debug("Train last layers of the VGG-16, freeze the previous ones")
 
-    layers.append(torch.squeeze(32)) # Added just to try
+    #layers.append(torch.squeeze(32)) # Added just to try
     
     backbone = torch.nn.Sequential(*layers)
     
