@@ -56,11 +56,15 @@ class GeoLocalizationNet(nn.Module):
             self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
         
     def forward(self, x):
+        print(f"Original dimension: {x.shape}")
         x = self.backbone(x)
+        print(f"Dimension after backbone: {x.shape}")
         if self.attn:
             x, _ = self.attn(x)
+            print(f"Dimension after attention layer: {x.shape}")
         if self.rerank:
             x = self.rerank(x)
+            print(f"Dimension after reranking layer: {x.shape}")
         x = self.aggregation(x)
         return x
 
