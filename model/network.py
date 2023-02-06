@@ -101,10 +101,15 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
                 p.requires_grad = False
         logging.debug("Train last layers of the VGG-16, freeze the previous ones")
 
-    layers.append(torch.nn.AvgPool2d(3, 2, 1))
+    layers.append(conv1x1(512, 1))
+    layers.append(torch.nn.BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True))
     
     backbone = torch.nn.Sequential(*layers)
     
     features_dim = CHANNELS_NUM_IN_LAST_CONV[backbone_name]
     
     return backbone, features_dim
+
+def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
+    """1x1 convolution"""
+    return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, bias=False)
