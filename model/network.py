@@ -59,7 +59,7 @@ class GeoLocalizationNet(nn.Module):
         print(f"Original dimension: {x.shape}")
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
-        x = torch.squeeze(x, 32)
+        x = torch.squeeze(x, 0)
         print(f"Dimension after added squeeze: {x.shape}")
         if self.attn:
             x, _ = self.attn(x)
