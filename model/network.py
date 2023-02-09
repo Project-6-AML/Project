@@ -63,7 +63,7 @@ class GeoLocalizationNet(nn.Module):
         print(f"Dimension after added squeeze: {x.shape}")
         
         if self.attn:
-                fc_out, feature_conv, feature_convNBN = self.backbone(input)
+                fc_out, feature_conv, feature_convNBN = self.backbone(x)
                 bz, nc, h, w = feature_conv.size()
                 feature_conv_view = feature_conv.view(bz, nc, h * w)
                 probs, idxs = fc_out.sort(1, True)
