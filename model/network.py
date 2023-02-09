@@ -65,18 +65,19 @@ class GeoLocalizationNet(nn.Module):
        """ if self.attn:
             x, _ = self.attn(x)
             print(f"Dimension after attention layer: {x.shape}")"""
+    
             
         if self.attn:
-                fc_out, feature_conv, feature_convNBN = self.backbone(input)
-                bz, nc, h, w = feature_conv.size()
-                feature_conv_view = feature_conv.view(bz, nc, h * w)
-                probs, idxs = fc_out.sort(1, True)
-                class_idx = idxs[:, 0]
-                scores = self.weight_softmax[class_idx].to(input.device)
-                cam = torch.bmm(scores.unsqueeze(1), feature_conv_view)
-                attention_map = F.softmax(cam.squeeze(1), dim=1)
-                attention_map = attention_map.view(attention_map.size(0), 1, h, w)
-                attention_features = feature_convNBN * attention_map.expand_as(feature_conv)
+            fc_out, feature_conv, feature_convNBN = self.backbone(input)
+            bz, nc, h, w = feature_conv.size()
+            feature_conv_view = feature_conv.view(bz, nc, h * w)
+            probs, idxs = fc_out.sort(1, True)
+            class_idx = idxs[:, 0]
+            scores = self.weight_softmax[class_idx].to(input.device)
+            cam = torch.bmm(scores.unsqueeze(1), feature_conv_view)
+            attention_map = F.softmax(cam.squeeze(1), dim=1)
+            attention_map = attention_map.view(attention_map.size(0), 1, h, w)
+            attention_features = feature_convNBN * attention_map.expand_as(feature_conv)
         if self.rerank:
             x = self.rerank(x)
             print(f"Dimension after reranking layer: {x.shape}")
