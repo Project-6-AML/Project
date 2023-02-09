@@ -74,9 +74,9 @@ class GeoLocalizationNet(nn.Module):
                 attention_map = attention_map.view(attention_map.size(0), 1, h, w)
                 attention_features = feature_convNBN * attention_map.expand_as(feature_conv)
         
-       """ if self.attn:
-            x, _ = self.attn(x)
-            print(f"Dimension after attention layer: {x.shape}")"""
+       # if self.attn:
+        #    x, _ = self.attn(x)
+         #   print(f"Dimension after attention layer: {x.shape}")
         if self.rerank:
             x = self.rerank(x)
             print(f"Dimension after reranking layer: {x.shape}")
