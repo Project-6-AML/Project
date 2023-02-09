@@ -114,8 +114,8 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
                 p.requires_grad = False
         logging.debug("Train last layers of the VGG-16, freeze the previous ones")
 
-    layers.append(conv1x1(512, 1))
-    layers.append(torch.nn.BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True))
+    #layers.append(conv1x1(512, 1))
+    #layers.append(torch.nn.BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True))
     
     backbone = torch.nn.Sequential(*layers)
     
