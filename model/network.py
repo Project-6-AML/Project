@@ -135,7 +135,7 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
     
     backbone = torch.nn.Sequential(*layers)
     
-    avg_fc = last_layers
+    avg_fc = [torch.nn.Sequential(*last_layer) for last_layer in last_layers]
     
     features_dim = CHANNELS_NUM_IN_LAST_CONV[backbone_name]
     
