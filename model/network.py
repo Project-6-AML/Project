@@ -69,8 +69,10 @@ class GeoLocalizationNet(nn.Module):
         print(f"Dimension after backbone: {x.shape}")
         feature_conv = x #deepcopy(x)        
         x = self.avg_fc[0](x)
+        x.get_device()
         print(f"Dimension after {self.avg_fc[0]}: {x.shape}")
         x = x.view(x.size(0), -1)
+        x.get_device()
         x = self.avg_fc[1](x)
         print(f"Dimension after {self.avg_fc[1]}: {x.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
@@ -135,7 +137,8 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
     
     backbone = torch.nn.Sequential(*layers)
     
-    avg_fc = [torch.nn.Sequential(*last_layer) for last_layer in last_layers]
+    avg_fc = last_layers
+    #avg_fc = [torch.nn.Sequential(*[last_layer]) for last_layer in last_layers]
     
     features_dim = CHANNELS_NUM_IN_LAST_CONV[backbone_name]
     
