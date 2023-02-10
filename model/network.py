@@ -67,11 +67,11 @@ class GeoLocalizationNet(nn.Module):
         #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
-        feature_conv = x #deepcopy(x)
-        fc_out = feature_conv #deepcopy(feature_conv)
-        for layer in self.avg_fc:
+        feature_conv = torch.new_tensor(x) #deepcopy(x)
+        fc_out = torch.new_tensor(feature_conv) #deepcopy(feature_conv)
+        for layer in list(self.avg_fc[1]):
             fc_out = layer(fc_out)
-            fc_out.to("cuda")
+            #fc_out.to("cuda")
             print(f"Dimension after {layer}: {fc_out.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
