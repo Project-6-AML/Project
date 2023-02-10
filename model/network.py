@@ -5,7 +5,7 @@ import torchvision
 from torch import nn
 import torch.nn.functional as F
 from typing import Tuple
-import AttenNetVLAD
+import model.AttenNetVLAD
 
 from model.layers import Flatten, L2Norm, GeM
 from self_attention_GAN import Self_Attn
