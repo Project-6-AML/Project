@@ -91,7 +91,7 @@ class GeoLocalizationNet(nn.Module):
             attention_map = F.softmax(cam.squeeze(1), dim=1)
             attention_map = attention_map.view(attention_map.size(0), 1, h, w)
             attention_features = attention_map.expand_as(feature_conv)
-            x = self.netvlad_layer(attention_features)
+            x = self.netvlad_layer(attention_features, num_clusters=32, dim=512)
             print(f"Dimension after attention layer: {x.shape}")
         if self.rerank:
             x = self.rerank(x)
