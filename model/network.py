@@ -42,7 +42,12 @@ class GeoLocalizationNet(nn.Module):
         
         self.attn = None
         if self_attn:
-            self.attn = Self_Attn( 512, 'relu')
+            print()
+            #self.attn = Self_Attn( 512, 'relu')
+            
+            #netvlad_layer = network.NetVLAD(num_clusters=args.num_clusters, dim=args.encoder_dim)
+            
+            
         
         self.rerank = None
         if rerank:
@@ -57,10 +62,12 @@ class GeoLocalizationNet(nn.Module):
         
     def forward(self, x):
         print(f"Original dimension: {x.shape}")
+        fc_out, feature_conv, feature_convNBN = self.backbone(x)
+        print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
-        x = torch.squeeze(x, 1)
-        print(f"Dimension after added squeeze: {x.shape}")
+       # x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
+        #print(f"Dimension after added squeeze: {x.shape}")
         if self.attn:
             x, _ = self.attn(x)
             print(f"Dimension after attention layer: {x.shape}")
@@ -92,7 +99,7 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
             for params in child.parameters():
                 params.requires_grad = False
         logging.debug(f"Train only layer3 and layer4 of the {backbone_name}, freeze the previous ones")
-        layers = list(backbone.children())[:-1]  # Remove avg pooling and FC layer
+        layers = list(backbone.children())[:-2]  # Remove avg pooling and FC layer
         
     
     elif backbone_name == "VGG16":
@@ -102,8 +109,9 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
                 p.requires_grad = False
         logging.debug("Train last layers of the VGG-16, freeze the previous ones")
 
-    layers.append(conv1x1(512, 1))
-    layers.append(torch.nn.BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True))
+    # RERANKING LAYERS -------------------------------------------------------------------------------------------------------------------------------------------------
+    #layers.append(conv1x1(512, 1))
+    #layers.append(torch.nn.BatchNorm2d(1, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True))
     
     backbone = torch.nn.Sequential(*layers)
     
