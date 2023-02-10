@@ -6,6 +6,7 @@ from torch import nn
 import torch.nn.functional as F
 from typing import Tuple
 from model.AttenNetVLAD import NetVLAD
+from copy import deepcopy
 
 from model.layers import Flatten, L2Norm, GeM
 from self_attention_GAN import Self_Attn
@@ -32,7 +33,8 @@ class GeoLocalizationNet(nn.Module):
         super().__init__()
         assert backbone in CHANNELS_NUM_IN_LAST_CONV, f"backbone must be one of {list(CHANNELS_NUM_IN_LAST_CONV.keys())}"
         self.backbone, features_dim, self.avg_fc = get_backbone(backbone)       
-        print(self.backbone)
+        print(f"Backbone {self.backbone}")
+        print(f"Ultimi 2 layer {self.avg_fc}")
 
         self.aggregation = nn.Sequential(
             L2Norm(),
@@ -64,9 +66,12 @@ class GeoLocalizationNet(nn.Module):
         #fc_out, feature_conv, feature_convNBN = self.backbone(x)
         #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
-        feature_conv = x
-        fc_out = self.avg_fc(feature_conv)
         print(f"Dimension after backbone: {x.shape}")
+        feature_conv = deepcopy(x)
+        fc_out = deepcopy(feature_conv)
+        for layer in self.avg_fc:
+            fc_out = layer(fc_out)
+            print(f"Dimension after {layer}: {fc_out.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
         if self.attention:
@@ -129,7 +134,7 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
     
     backbone = torch.nn.Sequential(*layers)
     
-    avg_fc = nn.Sequential(*last_layers)
+    avg_fc = last_layers
     
     features_dim = CHANNELS_NUM_IN_LAST_CONV[backbone_name]
     
