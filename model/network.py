@@ -67,8 +67,8 @@ class GeoLocalizationNet(nn.Module):
         #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
-        feature_conv = torch.new_tensor(x) #deepcopy(x)
-        fc_out = torch.new_tensor(feature_conv) #deepcopy(feature_conv)
+        feature_conv = x.clone().detach() #deepcopy(x)
+        fc_out = feature_conv.clone().detach() #deepcopy(feature_conv)
         for layer in list(self.avg_fc[1]):
             fc_out = layer(fc_out)
             #fc_out.to("cuda")
