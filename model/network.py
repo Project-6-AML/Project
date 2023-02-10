@@ -5,7 +5,7 @@ import torchvision
 from torch import nn
 import torch.nn.functional as F
 from typing import Tuple
-import model.AttenNetVLAD
+from model.AttenNetVLAD import NetVLAD
 
 from model.layers import Flatten, L2Norm, GeM
 from self_attention_GAN import Self_Attn
@@ -46,7 +46,7 @@ class GeoLocalizationNet(nn.Module):
         if self_attn:
             print()
             #self.attn = Self_Attn( 512, 'relu')
-            self.netvlad_layer = AttenNetVLAD.NetVLAD()
+            self.netvlad_layer = NetVLAD()
         
         self.rerank = None
         if rerank:
