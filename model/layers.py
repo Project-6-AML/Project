@@ -5,7 +5,8 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
 
-def gem(x, p=torch.ones(1)*3, eps: float = 1e-6):
+def gem(x, p=torch.ones(1)*3, eps: float = 1e-6):  
+    print(f"Dimension in the gem: {x.shape}") 
     return F.avg_pool2d(x.clamp(min=eps).pow(p), (x.size(-2), x.size(-1))).pow(1./p)
 
 
