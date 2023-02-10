@@ -96,6 +96,9 @@ class GeoLocalizationNet(nn.Module):
         if self.rerank:
             x = self.rerank(x)
             print(f"Dimension after reranking layer: {x.shape}")
+            
+        x = x.unsqueeze(-1)
+        x = x.unsqueeze(-1)
         x = self.aggregation(x)
         return x
 
