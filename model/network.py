@@ -75,6 +75,8 @@ class GeoLocalizationNet(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         print(f"Dimension after {self.fc}: {x.shape}")
+        
+        self.weight_softmax = self.fc.weight
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
         if self.netvlad_layer:
