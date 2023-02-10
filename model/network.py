@@ -77,7 +77,7 @@ class GeoLocalizationNet(nn.Module):
         print(f"Dimension after {self.fc}: {x.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
-        if self.attention:
+        if self.netvlad_layer:
             x, feature_conv, feature_convNBN = self.backbone(input)
             #print(f'{x.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
             bz, nc, h, w = feature_conv.size()
