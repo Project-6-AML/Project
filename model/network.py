@@ -67,8 +67,8 @@ class GeoLocalizationNet(nn.Module):
         #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
-        feature_conv = deepcopy(x)
-        fc_out = deepcopy(feature_conv)
+        feature_conv = x #deepcopy(x)
+        fc_out = feature_conv #deepcopy(feature_conv)
         for layer in self.avg_fc:
             fc_out = layer(fc_out)
             print(f"Dimension after {layer}: {fc_out.shape}")
