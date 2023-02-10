@@ -3,7 +3,9 @@ import torch
 import logging
 import torchvision
 from torch import nn
+import torch.nn.functional as F
 from typing import Tuple
+import AttenNetVLAD
 
 from model.layers import Flatten, L2Norm, GeM
 from self_attention_GAN import Self_Attn
@@ -29,7 +31,7 @@ class GeoLocalizationNet(nn.Module):
         """
         super().__init__()
         assert backbone in CHANNELS_NUM_IN_LAST_CONV, f"backbone must be one of {list(CHANNELS_NUM_IN_LAST_CONV.keys())}"
-        self.backbone, features_dim = get_backbone(backbone)       
+        self.backbone, features_dim, self.avg_fc = get_backbone(backbone)       
         print(self.backbone)
 
         self.aggregation = nn.Sequential(
@@ -40,14 +42,11 @@ class GeoLocalizationNet(nn.Module):
             L2Norm()
         )
         
-        self.attn = None
+        self.netvlad_layer = None
         if self_attn:
             print()
             #self.attn = Self_Attn( 512, 'relu')
-            
-            #netvlad_layer = network.NetVLAD(num_clusters=args.num_clusters, dim=args.encoder_dim)
-            
-            
+            self.netvlad_layer = AttenNetVLAD.NetVLAD()
         
         self.rerank = None
         if rerank:
@@ -62,14 +61,27 @@ class GeoLocalizationNet(nn.Module):
         
     def forward(self, x):
         print(f"Original dimension: {x.shape}")
-        fc_out, feature_conv, feature_convNBN = self.backbone(x)
-        print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
+        #fc_out, feature_conv, feature_convNBN = self.backbone(x)
+        #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
+        feature_conv = x
+        fc_out = self.avg_fc(feature_conv)
         print(f"Dimension after backbone: {x.shape}")
-       # x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
+        #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
-        if self.attn:
-            x, _ = self.attn(x)
+        if self.attention:
+            fc_out, feature_conv, feature_convNBN = self.backbone(input)
+            #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
+            bz, nc, h, w = feature_conv.size()
+            feature_conv_view = feature_conv.view(bz, nc, h * w)
+            probs, idxs = fc_out.sort(1, True)
+            class_idx = idxs[:, 0]
+            scores = self.weight_softmax[class_idx].to(input.device)
+            cam = torch.bmm(scores.unsqueeze(1), feature_conv_view)
+            attention_map = F.softmax(cam.squeeze(1), dim=1)
+            attention_map = attention_map.view(attention_map.size(0), 1, h, w)
+            attention_features = attention_map.expand_as(feature_conv)
+            x = self.netvlad_layer(attention_features)
             print(f"Dimension after attention layer: {x.shape}")
         if self.rerank:
             x = self.rerank(x)
@@ -100,10 +112,12 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
                 params.requires_grad = False
         logging.debug(f"Train only layer3 and layer4 of the {backbone_name}, freeze the previous ones")
         layers = list(backbone.children())[:-2]  # Remove avg pooling and FC layer
+        last_layers = list(backbone.children())[-2:]
         
     
     elif backbone_name == "VGG16":
         layers = list(backbone.features.children())[:-2]  # Remove avg pooling and FC layer
+        last_layers = list(backbone.children())[-2:]
         for layer in layers[:-5]:
             for p in layer.parameters():
                 p.requires_grad = False
@@ -115,9 +129,11 @@ def get_backbone(backbone_name : str) -> Tuple[torch.nn.Module, int]:
     
     backbone = torch.nn.Sequential(*layers)
     
+    avg_fc = nn.Sequential(*last_layers)
+    
     features_dim = CHANNELS_NUM_IN_LAST_CONV[backbone_name]
     
-    return backbone, features_dim
+    return backbone, features_dim, avg_fc
 
 def conv1x1(in_planes: int, out_planes: int, stride: int = 1) -> nn.Conv2d:
     """1x1 convolution"""

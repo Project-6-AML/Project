@@ -24,7 +24,7 @@ class AttenNetVLAD(nn.Module):
             cam = torch.bmm(scores.unsqueeze(1), feature_conv_view)
             attention_map = F.softmax(cam.squeeze(1), dim=1)
             attention_map = attention_map.view(attention_map.size(0), 1, h, w)
-            attention_features = feature_convNBN * attention_map.expand_as(feature_conv)
+            attention_features = attention_map.expand_as(feature_conv)
             
             if mode == "feat":
                 out = attention_features
