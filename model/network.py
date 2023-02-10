@@ -78,13 +78,13 @@ class GeoLocalizationNet(nn.Module):
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
         if self.netvlad_layer:
-            x, feature_conv, feature_convNBN = self.backbone(input)
+            #x, feature_conv, feature_convNBN = self.backbone(x)
             #print(f'{x.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
             bz, nc, h, w = feature_conv.size()
             feature_conv_view = feature_conv.view(bz, nc, h * w)
             probs, idxs = x.sort(1, True)
             class_idx = idxs[:, 0]
-            scores = self.weight_softmax[class_idx].to(input.device)
+            scores = self.weight_softmax[class_idx].to(x.device)
             cam = torch.bmm(scores.unsqueeze(1), feature_conv_view)
             attention_map = F.softmax(cam.squeeze(1), dim=1)
             attention_map = attention_map.view(attention_map.size(0), 1, h, w)
