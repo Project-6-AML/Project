@@ -37,20 +37,20 @@ class GeoLocalizationNet(nn.Module):
         print(f"Ultimi 2 layer {self.avg_fc}")
         self.avg2DPooling = nn.AdaptiveAvgPool2d((1,1))
         self.fc = nn.Linear(512, 1000)
-
-        self.aggregation = nn.Sequential(
-            L2Norm(),
-            GeM(),
-            Flatten(),
-            nn.Linear(features_dim, fc_output_dim),
-            L2Norm()
-        )
         
         self.netvlad_layer = None
         if self_attn:
             print()
             #self.attn = Self_Attn( 512, 'relu')
             self.netvlad_layer = NetVLAD(num_clusters=32, dim=512)
+
+        self.aggregation = nn.Sequential(
+            L2Norm(),
+            GeM(),
+            Flatten(),
+            nn.Linear(16384, fc_output_dim),
+            L2Norm()
+        )
         
         self.rerank = None
         if rerank:
