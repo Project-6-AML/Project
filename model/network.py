@@ -69,7 +69,7 @@ class GeoLocalizationNet(nn.Module):
         print(f"Dimension after backbone: {x.shape}")
         feature_conv = x.clone().detach() #deepcopy(x)
         fc_out = feature_conv.clone().detach() #deepcopy(feature_conv)
-        for layer in list(self.avg_fc[1]):
+        for layer in self.avg_fc:
             fc_out = layer(fc_out)
             #fc_out.to("cuda")
             print(f"Dimension after {layer}: {fc_out.shape}")
