@@ -45,9 +45,9 @@ class GeoLocalizationNet(nn.Module):
             self.netvlad_layer = NetVLAD(num_clusters=32, dim=512)
 
         self.aggregation = nn.Sequential(
-            L2Norm(),
-            GeM(),
-            Flatten(),
+            #L2Norm(),
+            #GeM(),
+            #Flatten(),
             nn.Linear(16384, fc_output_dim),
             L2Norm()
         )
@@ -64,17 +64,17 @@ class GeoLocalizationNet(nn.Module):
             self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
         
     def forward(self, x):
-        print(f"Original dimension: {x.shape}")
+        #print(f"Original dimension: {x.shape}")
         #fc_out, feature_conv, feature_convNBN = self.backbone(x)
         #print(f'{fc_out.size()}, {feature_conv.size()}, {feature_convNBN.size()}')
         x = self.backbone(x)
-        print(f"Dimension after backbone: {x.shape}")
+        #print(f"Dimension after backbone: {x.shape}")
         feature_conv = x #deepcopy(x)  
         x = self.avg2DPooling(x)
-        print(f"Dimension after {self.avg2DPooling}: {x.shape}")
+        #print(f"Dimension after {self.avg2DPooling}: {x.shape}")
         x = x.view(x.size(0), -1)
         x = self.fc(x)
-        print(f"Dimension after {self.fc}: {x.shape}")
+        #print(f"Dimension after {self.fc}: {x.shape}")
         
         self.weight_softmax = self.fc.weight
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
@@ -92,13 +92,13 @@ class GeoLocalizationNet(nn.Module):
             attention_map = attention_map.view(attention_map.size(0), 1, h, w)
             attention_features = attention_map.expand_as(feature_conv)
             x = self.netvlad_layer(attention_features)
-            print(f"Dimension after attention layer: {x.shape}")
+            #print(f"Dimension after attention layer: {x.shape}")
         if self.rerank:
             x = self.rerank(x)
-            print(f"Dimension after reranking layer: {x.shape}")
+            #print(f"Dimension after reranking layer: {x.shape}")
             
-        x = x.unsqueeze(-1)
-        x = x.unsqueeze(-1)
+        #x = x.unsqueeze(-1)
+        #x = x.unsqueeze(-1)
         x = self.aggregation(x)
         return x
 
