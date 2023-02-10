@@ -35,6 +35,8 @@ class GeoLocalizationNet(nn.Module):
         self.backbone, features_dim, self.avg_fc = get_backbone(backbone)       
         print(f"Backbone {self.backbone}")
         print(f"Ultimi 2 layer {self.avg_fc}")
+        self.avg2DPooling = nn.AdaptiveAvgPool2d((1,1))
+        self.fc = nn.Linear(512, 1000)
 
         self.aggregation = nn.Sequential(
             L2Norm(),
@@ -68,14 +70,11 @@ class GeoLocalizationNet(nn.Module):
         x = self.backbone(x)
         print(f"Dimension after backbone: {x.shape}")
         feature_conv = x #deepcopy(x)  
-        print(x.get_device())      
-        x = self.avg_fc[0](x)
-        print(x.get_device())
-        print(f"Dimension after {self.avg_fc[0]}: {x.shape}")
+        x = self.avg2DPooling(x)
+        print(f"Dimension after {self.avg2DPooling}: {x.shape}")
         x = x.view(x.size(0), -1)
-        print(x.get_device())
-        x = self.avg_fc[1](x)
-        print(f"Dimension after {self.avg_fc[1]}: {x.shape}")
+        x = self.fc(x)
+        print(f"Dimension after {self.fc}: {x.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
         if self.attention:
