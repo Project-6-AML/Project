@@ -71,6 +71,7 @@ class GeoLocalizationNet(nn.Module):
         fc_out = feature_conv #deepcopy(feature_conv)
         for layer in self.avg_fc:
             fc_out = layer(fc_out)
+            fc_out.to("cuda")
             print(f"Dimension after {layer}: {fc_out.shape}")
         #x = torch.squeeze(x, 1) SQUEEZE PER IL RE-RANKING
         #print(f"Dimension after added squeeze: {x.shape}")
