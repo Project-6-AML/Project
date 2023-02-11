@@ -29,7 +29,7 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
             descriptors = descriptors.cpu().numpy()
             vlad_encoding=model(images.to(args.device) #aggiunto per AL
             #all_descriptors[indices.numpy(), :] = descriptors
-            all_descriptors[indices.numpy(),:]=vlad_encoding.cpu().numpy()
+            all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
             del images,vlad_encoding
         
         logging.debug("Extracting queries descriptors for evaluation/testing using batch size 1")
