@@ -27,7 +27,9 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
         for images, indices in tqdm(database_dataloader, ncols=100):
             descriptors = model(images.to(args.device))
             descriptors = descriptors.cpu().numpy()
-            all_descriptors[indices.numpy(), :] = descriptors
+            vlad_encoding=model(images) #aggiunto per AL
+            #all_descriptors[indices.numpy(), :] = descriptors
+            all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
         
         logging.debug("Extracting queries descriptors for evaluation/testing using batch size 1")
         queries_infer_batch_size = 1
@@ -37,7 +39,9 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
         for images, indices in tqdm(queries_dataloader, ncols=100):
             descriptors = model(images.to(args.device))
             descriptors = descriptors.cpu().numpy()
-            all_descriptors[indices.numpy(), :] = descriptors
+            vlad_encoding=model(images) #aggiunto per AL
+            #all_descriptors[indices.numpy(), :] = descriptors
+            all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
     
     queries_descriptors = all_descriptors[eval_ds.database_num:]
     database_descriptors = all_descriptors[:eval_ds.database_num]
