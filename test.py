@@ -30,6 +30,7 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
             vlad_encoding=model(images) #aggiunto per AL
             #all_descriptors[indices.numpy(), :] = descriptors
             all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
+            del images,vlad_encoding
         
         logging.debug("Extracting queries descriptors for evaluation/testing using batch size 1")
         queries_infer_batch_size = 1
@@ -42,6 +43,7 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
             vlad_encoding=model(images) #aggiunto per AL
             #all_descriptors[indices.numpy(), :] = descriptors
             all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
+            del images, vlad_encoding
     
     queries_descriptors = all_descriptors[eval_ds.database_num:]
     database_descriptors = all_descriptors[:eval_ds.database_num]
