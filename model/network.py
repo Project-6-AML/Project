@@ -107,7 +107,7 @@ class GeoLocalizationNet(nn.Module):
         #x = x.unsqueeze(-1)
         x = self.aggregation(x)
 
-        if self.attn:
+        if self_attn:
             fc_out, feature_conv, feature_convNBN = self.backbone(x)
             bz, nc, h, w = feature_conv.size()
             feature_conv_view = feature_conv.view(bz, nc, h * w)
