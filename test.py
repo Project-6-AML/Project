@@ -23,13 +23,15 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
         database_subset_ds = Subset(eval_ds, list(range(eval_ds.database_num)))
         database_dataloader = DataLoader(dataset=database_subset_ds, num_workers=args.num_workers,
                                          batch_size=args.infer_batch_size, pin_memory=(args.device == "cuda"))
-        all_descriptors = np.empty((len(eval_ds), args.fc_output_dim), dtype="float32")
+        features_dim=32*512
+        #all_descriptors = np.empty((len(eval_ds), args.fc_output_dim), dtype="float32")
+        all_descriptors = np.empty((len(eval_ds), features_dim), dtype="float32")
         for images, indices in tqdm(database_dataloader, ncols=100):
-            descriptors = model(images.to(args.device))
-            descriptors = descriptors.cpu().numpy()
+            #descriptors = model(images.to(args.device))
+            #descriptors = descriptors.cpu().numpy()
             vlad_encoding=model(images.to(args.device)) #aggiunto per AL
             #all_descriptors[indices.numpy(), :] = descriptors
-            all_descriptors[indices.numpy(),:]=vlad_encoding.cpu().numpy()
+            all_descriptors[indices.numpy(),:]=vlad_encoding.detach().cpu().numpy()
             del images,vlad_encoding
         
         logging.debug("Extracting queries descriptors for evaluation/testing using batch size 1")
@@ -38,8 +40,8 @@ def test(args: Namespace, eval_ds: Dataset, model: torch.nn.Module) -> Tuple[np.
         queries_dataloader = DataLoader(dataset=queries_subset_ds, num_workers=args.num_workers,
                                         batch_size=queries_infer_batch_size, pin_memory=(args.device == "cuda"))
         for images, indices in tqdm(queries_dataloader, ncols=100):
-            descriptors = model(images.to(args.device))
-            descriptors = descriptors.cpu().numpy()
+            #descriptors = model(images.to(args.device))
+            #descriptors = descriptors.cpu().numpy()
             vlad_encoding=model(images.to(args.device)) #aggiunto per AL
             all_descriptors[indices.numpy(), :] = vlad_encoding.detach().cpu().numpy()
             del images, vlad_encoding
