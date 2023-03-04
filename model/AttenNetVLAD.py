@@ -65,6 +65,7 @@ class NetVLAD(nn.Module):
     
     def init_params(self, clsts, traindescs):
         # Init vlad params
+        print(f'init_params({clsts}, {traindescs})')
         clsts_assign = clsts / np.linalg.norm(clsts, axis=1, keepdims=True)
         dots = np.dot(clsts_assign, traindescs.T)
         dots.sort(0)
