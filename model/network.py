@@ -59,7 +59,7 @@ class GeoLocalizationNet(nn.Module):
             activation = 'relu'
             normalize_before = False
             dim_feedforward = features_dim #dim of the blocks of the inner dropout
-            encoder_layer = TransformerEncoderLayer(features_dim, nhead, dim_feedforward, dropout, activation, normalize_before)
+            encoder_layer = TransformerEncoderLayer(1000, nhead, dim_feedforward, dropout, activation, normalize_before)
             encoder_norm = nn.LayerNorm(features_dim) if normalize_before else None
             self.rerank = TransformerEncoder(encoder_layer, 1, encoder_norm)
         
