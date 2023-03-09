@@ -45,10 +45,10 @@ class GeoLocalizationNet(nn.Module):
             self.netvlad_layer = NetVLAD(num_clusters=32, dim=512)
 
         self.aggregation = nn.Sequential(
-            #L2Norm(),
-            #GeM(),
-            #Flatten(),
-            nn.Linear(16384, fc_output_dim),
+            L2Norm(),
+            GeM(),
+            Flatten(),
+            nn.Linear(1000, fc_output_dim),
             L2Norm()
         )
         
